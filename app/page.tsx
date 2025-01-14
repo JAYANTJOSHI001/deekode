@@ -5,6 +5,7 @@ import { FaChartLine, FaCalculator, FaFileInvoiceDollar, FaHandshake, FaComments
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const HomePage = () => {
   const [chatOpen, setChatOpen] = useState(false)
@@ -103,38 +104,7 @@ const HomePage = () => {
 
       {/* Live Chat */}
       <div className="fixed bottom-4 right-4 z-50">
-        {chatOpen ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="bg-white rounded-lg shadow-lg p-4 w-80"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold">Live Chat</h3>
-              <button onClick={() => setChatOpen(false)} className="text-gray-500 hover:text-gray-700">
-                &times;
-              </button>
-            </div>
-            <div className="h-64 overflow-y-auto mb-4 bg-gray-100 p-2 rounded">
-              {/* Chat messages would go here */}
-            </div>
-            <input
-              type="text"
-              placeholder="Type your message..."
-              className="w-full p-2 border rounded"
-            />
-          </motion.div>
-        ) : (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setChatOpen(true)}
-            className="bg-blue-600 text-white p-4 rounded-full shadow-lg"
-          >
-            <FaComments size={24} />
-          </motion.button>
-        )}
+        <Chatbot />
       </div>
     </div>
   )
@@ -163,6 +133,97 @@ const ServiceCard: React.FC<ServiceCardProps> =  ({ icon, title, description }) 
     </motion.div>
   )
 }
+
+interface Message {
+  text: string;
+  sender: 'user' | 'bot';
+}
+
+const Chatbot = () => {
+  const [chatOpen, setChatOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+
+  const handleSendMessage = async () => {
+      if (input.trim()) {
+          const userMessage: Message = { text: input, sender: 'user' };
+          setMessages(prev => [...prev, userMessage]);
+          setInput('');
+
+          try {
+              const response = await axios.post('https://api.gemini.ai/v1/chat', {
+                  messages: [{ role: 'user', content: input }],
+              }, {
+                  headers: {
+                      'Authorization': `Bearer YOUR_GEMINI_API_KEY`,
+                      'Content-Type': 'application/json'
+                  }
+              });
+
+              const botResponse = response.data.choices[0].message.content;
+              const botMessage: Message = { text: botResponse, sender: 'bot' };
+              setMessages(prev => [...prev, botMessage]);
+          } catch (error) {
+              console.error('Error fetching Gemini API response:', error);
+              setMessages(prev => [...prev, { text: 'Error fetching response from bot.', sender: 'bot' }]);
+          }
+      }
+  };
+
+  return (
+      <div className="fixed bottom-4 right-4 z-50">
+          {chatOpen ? (
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="bg-white rounded-lg shadow-xl p-4 w-80 border border-gray-300"
+              >
+                  <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-lg">Live Chat</h3>
+                      <button onClick={() => setChatOpen(false)} className="text-gray-500 hover:text-red-500 text-xl">
+                          &times;
+                      </button>
+                  </div>
+                  <div className="h-64 overflow-y-auto mb-4 bg-gray-100 p-2 rounded space-y-2">
+                      {messages.map((msg, index) => (
+                          <div
+                              key={index}
+                              className={`p-2 rounded-lg max-w-xs ${msg.sender === 'user' ? 'bg-blue-500 text-white self-end' : 'bg-gray-300 text-black self-start'}`}
+                          >
+                              {msg.text}
+                          </div>
+                      ))}
+                  </div>
+                  <div className="flex space-x-2">
+                      <input
+                          type="text"
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          placeholder="Type your message..."
+                          className="flex-1 p-2 border rounded"
+                      />
+                      <button
+                          onClick={handleSendMessage}
+                          className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+                      >
+                          Send
+                      </button>
+                  </div>
+              </motion.div>
+          ) : (
+              <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setChatOpen(true)}
+                  className="bg-blue-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+              >
+                  <FaComments size={24} />
+              </motion.button>
+          )}
+      </div>
+  );
+};
 
 const TestimonialSlider = () => {
   const testimonials = [

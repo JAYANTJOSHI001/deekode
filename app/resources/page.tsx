@@ -15,6 +15,7 @@ const ResourcesPage = () => {
       title: '10 Tax-Saving Strategies for Small Businesses',
       excerpt: 'Discover effective ways to reduce your business tax liability and improve your bottom line.',
       category: 'Tax Planning',
+      link:'/blog/10-tax-saving-strategies-for-small-businesses',
       date: '2023-05-15',
     },
     {
@@ -22,6 +23,7 @@ const ResourcesPage = () => {
       title: 'Understanding the New Financial Reporting Standards',
       excerpt: 'Learn about the latest changes in financial reporting standards and how they affect your business.',
       category: 'Regulatory Updates',
+      link:'/blog/understanding-the-new-financial-reporting-standards',
       date: '2023-05-10',
     },
     {
@@ -29,6 +31,7 @@ const ResourcesPage = () => {
       title: 'Budgeting Tips for Personal Financial Success',
       excerpt: 'Practical advice on creating and sticking to a personal budget for long-term financial stability.',
       category: 'Financial Planning',
+      link:'/blog/budgeting-tips-for-personal-financial-success',
       date: '2023-05-05',
     },
     // Add more articles as needed
@@ -114,7 +117,7 @@ const ResourcesPage = () => {
                     <FaTag className="mr-1" /> {article.category}
                   </span>
                 </div>
-                <Link href={`/resources/${article.id}`} className="mt-4 inline-block text-blue-600 hover:underline">
+                <Link href={`${article.link}`} className="mt-4 inline-block text-blue-600 hover:underline">
                   Read More
                 </Link>
               </motion.div>
@@ -143,6 +146,11 @@ const ResourcesPage = () => {
               question="How can I reduce my tax liability legally?"
               answer="There are several ways to reduce your tax liability legally, including maximizing contributions to retirement accounts, taking advantage of tax deductions and credits, and strategic timing of income and expenses. It's best to work with a tax professional to develop a personalized tax strategy."
             />
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/faqs" className="bg-blue-600 text-white py-3 px-6 rounded-full font-bold hover:bg-blue-700 transition-colors duration-300 inline-flex items-center">
+              See All FAQs
+            </Link>
           </div>
         </div>
       </section>
