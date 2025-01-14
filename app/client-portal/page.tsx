@@ -6,7 +6,7 @@ import { FaUser, FaLock, FaFileAlt, FaUpload, FaDownload } from 'react-icons/fa'
 import Link from 'next/link'
 
 const ClientPortalPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isNewUser, setIsNewUser] = useState(false)
@@ -17,7 +17,7 @@ const ClientPortalPage = () => {
     setIsNewUser(urlParams.get('newUser') === 'true')
   }, [])
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     // In a real application, you would validate the credentials here
     setIsLoggedIn(true)

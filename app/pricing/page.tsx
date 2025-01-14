@@ -96,7 +96,15 @@ const PricingPage = () => {
   )
 }
 
-const PricingCard = ({ name, price, features, highlighted }) => {
+
+interface PricingCardProps {
+  name: string;
+  price: string;
+  features: string[];
+  highlighted?: boolean; // Optional prop to highlight the card
+}
+
+const PricingCard = ({ name, price, features, highlighted = false }: PricingCardProps) => {
   return (
     <motion.div 
       className={`bg-white p-6 rounded-lg shadow-md ${highlighted ? 'ring-2 ring-blue-600' : ''}`}
@@ -121,7 +129,7 @@ const PricingCard = ({ name, price, features, highlighted }) => {
 }
 
 const NewsletterSignup = () => {
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // Handle newsletter signup logic here
   }

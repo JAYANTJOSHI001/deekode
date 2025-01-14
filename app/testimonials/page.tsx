@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'import { motion } from 'framer-motion'
 import { useState } from 'react'
 import Image from 'next/image'
 import { FaStar, FaQuoteLeft } from 'react-icons/fa'
@@ -22,7 +21,7 @@ const TestimonialsPage = () => {
       id: 2,
       name: 'Sarah Johnson',
       company: 'Green Energy Solutions',
-      quote: 'We've been working with AccountFirm for over five years now, and they've consistently provided top-notch accounting services. Highly recommended!',
+      quote: "We've been working with AccountFirm for over five years now, and they've consistently provided top-notch accounting services. Highly recommended!",
       rating: 5,
       image: '/placeholder.svg?height=100&width=100',
     },
@@ -30,7 +29,7 @@ const TestimonialsPage = () => {
       id: 3,
       name: 'Michael Lee',
       company: 'Global Trade Co.',
-      quote: 'AccountFirm's international tax expertise has been crucial for our expanding business. They've saved us both time and money.',
+      quote: "AccountFirm's international tax expertise has been crucial for our expanding business. They've saved us both time and money.",
       rating: 4,
       image: '/placeholder.svg?height=100&width=100',
     },
@@ -46,7 +45,7 @@ const TestimonialsPage = () => {
     {
       id: 2,
       title: 'Scaling Green: Energy Solutions Growth Story',
-      description: 'AccountFirm's role in supporting the rapid expansion of a renewable energy company.',
+      description: "AccountFirm's role in supporting the rapid expansion of a renewable energy company.",
       results: ['Managed 300% revenue growth over 3 years', 'Implemented cost-saving measures resulting in 20% increased profitability', 'Seamless multi-state tax compliance'],
     },
   ]

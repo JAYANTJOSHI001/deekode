@@ -60,7 +60,12 @@ const ServicesPage = () => {
   )
 }
 
-const ServiceCard = ({ icon, title, description }) => {
+interface ServiceCardProps { 
+  icon: React.ReactNode
+  title: string
+  description: string
+}
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description }) => {
   return (
     <motion.div 
       className="bg-white p-6 rounded-lg shadow-md"

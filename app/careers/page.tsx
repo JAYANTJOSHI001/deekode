@@ -5,7 +5,17 @@ import { useState } from 'react'
 import { FaBriefcase, FaGraduationCap, FaClock } from 'react-icons/fa'
 
 const CareersPage = () => {
-  const [activeJob, setActiveJob] = useState(null)
+  interface Job {
+    id: number;
+    title: string;
+    department: string;
+    type: string;
+    location: string;
+    description: string;
+    requirements: string[];
+  }
+  const [activeJob, setActiveJob] = useState<Job | null>(null);
+
 
   const jobs = [
     {
@@ -16,7 +26,7 @@ const CareersPage = () => {
       location: 'New York, NY',
       description: 'We are seeking a highly skilled Senior Accountant to join our team. The ideal candidate will have extensive experience in financial reporting, tax preparation, and client advisory services.',
       requirements: [
-        'Bachelor's degree in Accounting or Finance',
+        "Bachelor's degree in Accounting or Finance",
         'CPA certification',
         '5+ years of experience in public accounting',
         'Strong knowledge of GAAP and tax regulations',
@@ -31,7 +41,7 @@ const CareersPage = () => {
       location: 'Chicago, IL',
       description: 'We are looking for a detail-oriented Tax Specialist to assist with tax planning and preparation for our diverse client base. The successful candidate will work closely with our senior tax professionals to deliver high-quality tax services.',
       requirements: [
-        'Bachelor's degree in Accounting or related field',
+        "Bachelor's degree in Accounting or related field",
         'EA or CPA certification preferred',
         '3+ years of experience in tax preparation',
         'Proficiency in tax software and Microsoft Office Suite',
@@ -46,7 +56,7 @@ const CareersPage = () => {
       location: 'Remote',
       description: 'We are seeking a part-time Bookkeeper to assist with maintaining accurate financial records for our clients. The ideal candidate will have experience with various accounting software and be able to work independently.',
       requirements: [
-        'Associate's degree in Accounting or related field',
+        "Associate's degree in Accounting or related field",
         '2+ years of bookkeeping experience',
         'Proficiency in QuickBooks and other accounting software',
         'Strong organizational and time management skills',
@@ -54,6 +64,8 @@ const CareersPage = () => {
       ],
     },
   ]
+
+   
 
   return (
     <div className="min-h-screen">
