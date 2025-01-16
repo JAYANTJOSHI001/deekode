@@ -1,8 +1,9 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const clientRoutes = require('./routes/clientRoutes');
-const serviceRoutes = require('./routes/serviceRoutes');
-const invoiceRoutes = require('./routes/invoiceRoutes');
+import express from 'express';
+import mongoose from 'mongoose';
+import clientRoutes from './routes/clientRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use('/api/invoices', invoiceRoutes);
 
 // Database Connection
 mongoose
-  .connect('mongodb+srv://deekode:Aniket4154@cluster0.631nx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect('mongodb+srv://deekode:Aniket4154@cluster0.631nx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error(err));
 

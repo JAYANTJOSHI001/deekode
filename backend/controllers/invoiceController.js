@@ -1,6 +1,6 @@
-const Invoice = require('../models/Invoice');
+import Invoice from '../models/Invoice.js';
 
-exports.getAllInvoices = async (req, res) => {
+export const getAllInvoices = async (req, res) => {
   try {
     const invoices = await Invoice.find().populate('client');
     res.status(200).json(invoices);
@@ -9,7 +9,7 @@ exports.getAllInvoices = async (req, res) => {
   }
 };
 
-exports.createInvoice = async (req, res) => {
+export const createInvoice = async (req, res) => {
   try {
     const invoice = new Invoice(req.body);
     await invoice.save();
@@ -19,7 +19,7 @@ exports.createInvoice = async (req, res) => {
   }
 };
 
-exports.updateInvoice = async (req, res) => {
+export const updateInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json(invoice);
@@ -28,7 +28,7 @@ exports.updateInvoice = async (req, res) => {
   }
 };
 
-exports.deleteInvoice = async (req, res) => {
+export const deleteInvoice = async (req, res) => {
   try {
     await Invoice.findByIdAndDelete(req.params.id);
     res.status(204).send();

@@ -1,5 +1,6 @@
-const express = require('express');
-const { getAllInvoices, createInvoice, updateInvoice, deleteInvoice } = require('../controllers/invoiceController');
+import express from 'express';
+import { getAllInvoices, createInvoice, updateInvoice, deleteInvoice } from '../controllers/invoiceController.js';
+
 const router = express.Router();
 
 router.get('/', getAllInvoices);
@@ -7,4 +8,4 @@ router.post('/', createInvoice);
 router.put('/:id', updateInvoice);
 router.delete('/:id', deleteInvoice);
 
-module.exports = router;
+export default router;
