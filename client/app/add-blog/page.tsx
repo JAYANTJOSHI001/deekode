@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { FaTag } from 'react-icons/fa';
 
 const AddBlogPage = () => {
     const [title, setTitle] = useState('');
@@ -10,7 +12,7 @@ const AddBlogPage = () => {
     const [links, setLinks] = useState<string[]>([]);
     const [linkInput, setLinkInput] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [blogs, setBlogs] = useState<{ id: number; title: string; content: string }[]>([]);
+    const [blogs, setBlogs] = useState<{ id: number; title: string; content: string; categories: string[]; links: string[] }[]>([]);
 
     const handleCategoryChange = (category: string) => {
         if (categories.includes(category)) {
@@ -27,54 +29,118 @@ const AddBlogPage = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsSubmitting(true);
+    interface BlogData {
+        title: string;
+        content: string;
+        categories: string[];  // Ensure this matches the backend expectation
+        links: string[];       // Ensure this matches the backend expectation
+    }
     
-        try {
-            const response = await fetch('/api/blogs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, categories, links }),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to submit blog');
-            }
-    
-            const data = await response.json();
-            alert(`Blog titled "${data.blog.title}" has been added.`);
-            setTitle('');
-            setContent('');
-            setCategories([]);
-            setLinks([]);
-            fetchBlogs(); // Refresh blogs after adding a new one
-        } catch (error) {
-            console.error(error);
-            alert('An error occurred. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-    
+
+    interface BlogResponse {
+        blog: {
+            id: number;
+            title: string;
+            content: string;
+            categories: string[];
+            links: string[];
+        };
+    }
+   
 
     const fetchBlogs = async () => {
         try {
-            const response = await fetch('/api/blogs');
+            const response = await fetch('http://localhost:5000/api/blogs/');
             if (!response.ok) {
                 throw new Error('Failed to fetch blogs');
             }
             const data = await response.json();
-            setBlogs(data);
+            console.log(data);
+            return data; // Return the fetched blogs
         } catch (error) {
-            console.error(error);
-            alert('An error occurred while fetching blogs.');
+            console.error('Error fetching blogs:', error);
+            throw error; // Rethrow the error for handling in the calling function
+        }
+    };  
+    
+
+    const handleFetchBlogs = async () => {
+        try {
+            const blogsData = await fetchBlogs();
+            setBlogs(blogsData);
+        } catch (error) {
+            alert('Failed to load blogs. Please try again.');
         }
     };
+
+    interface FormEvent extends React.FormEvent<HTMLFormElement> {}
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const blogData: BlogData = { title, content, categories, links };
+
+        try {
+            console.log('Submitting blog data:', blogData);
+
+            // Call the function to submit the blog (assuming it exists).
+            await submitBlog(blogData);
+
+            // Reset form fields after successful submission.
+            resetForm();
+
+            // Refresh the blog list after submission.
+            handleFetchBlogs();
+
+            // Show success alert with dynamic title
+            alert(`Blog titled "${title}" has been added.`);
+
+        } catch (error) {
+            // Error alert with more detailed information
+            alert('Failed to submit blog. Please try again.');
+            console.error('Error submitting blog:', error); // More specific error handling for debugging
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Function to reset form fields
+    const resetForm = () => {
+        setTitle('');
+        setContent('');
+        setCategories([]);
+        setLinks([]);
+    };
+
+    // Function to submit the blog (assuming this exists and performs the actual API call)
+    const submitBlog = async (blogData: BlogData): Promise<void> => {
+        try {
+        const response = await fetch('http://localhost:5000/api/blogs/', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(blogData),
+        });
     
-      
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Server response:', errorData);
+            throw new Error(`Error: ${errorData.message || 'Failed to submit blog'}`);
+        }
+
+        const data = await response.json();
+        console.log('Blog submitted successfully:', data);
+        return data;
+        } catch (error) {
+        console.error('Error submitting blog:', error);  // Log error for better debugging
+        throw error;
+        }
+    };
+        
+
     useEffect(() => {
-        fetchBlogs();
+        handleFetchBlogs();
     }, []);
 
     return (
@@ -183,23 +249,33 @@ const AddBlogPage = () => {
                 </div>
             </section>
             {/* Blogs List Section */}
-            <section className="py-10">
-                <div className="container mx-auto px-6">
-                    <h2 className="text-2xl font-bold mb-4">Blogs</h2>
-                    {blogs.length === 0 ? (
-                        <p>No blogs available.</p>
-                    ) : (
-                        <ul className="space-y-4">
-                            {blogs.map((blog) => (
-                                <li key={blog.id} className="p-4 bg-white shadow rounded-lg">
-                                    <h3 className="text-lg font-semibold">{blog.title}</h3>
-                                    <p className="text-gray-600">{blog.content}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            </section>
+            <section className="pb-20 bg-gray-100 px-4">
+                <h2 className="text-2xl font-bold mb-8 text-center">Blogs</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogs.map(blog => (
+                <motion.div
+                    key={blog.id}
+                    className="bg-white p-6 rounded-lg shadow-md"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
+                    <p className="text-gray-600 mb-4">{blog.content}</p>
+                    <div className="flex justify-between items-center">
+                    {/* <span className="text-sm text-gray-500">{blog?.date}</span> */}
+                    {blog.categories.map(category => (
+                        <span key={category} className="flex items-center text-sm text-blue-600">
+                        <FaTag /> {category}
+                        </span>
+                    ))}
+                    </div>
+                    <Link href={blog?.links[0]} className="mt-4 inline-block text-blue-600 hover:underline">
+                    Read More
+                    </Link>
+                </motion.div>
+                ))}
+            </div>
+          </section>
         </div>
     );
 };

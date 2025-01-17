@@ -1,31 +1,33 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch, FaSort, FaUserPlus, FaUserMinus } from 'react-icons/fa';
 import AddClientModal from './AddClientModal';
+import axios from 'axios';
 
 type Client = {
-    id: number;
+    _id: number;
     name: string;
     email: string;
-    joinDate: string;
-    lastInvoice: string;
+    createdAt: string;
+    phone: number;
   };
   
   type SortField = keyof Client;
-  type NewClient = Omit<Client, 'id'>;
+  type NewClient = Omit<Client, '_id'>;
 const ExistingClientsPage = () => {
     const [clients, setClients] = useState<Client[]>([
-        { id: 1, name: 'Alice Brown', email: 'alice@example.com', joinDate: '2023-01-15', lastInvoice: '2023-06-01' },
-        { id: 2, name: 'Charlie Davis', email: 'charlie@example.com', joinDate: '2023-02-20', lastInvoice: '2023-05-15' },
-        { id: 3, name: 'Eva Green', email: 'eva@example.com', joinDate: '2023-03-10', lastInvoice: '2023-06-10' },
+        { _id: 1, name: 'Alice Brown', email: 'alice@example.com', createdAt: '2023-01-15', phone: 356865665 },
+        { _id: 2, name: 'Charlie Davis', email: 'charlie@example.com', createdAt: '2023-02-20', phone: 668898555 },
+        { _id: 3, name: 'Eva Green', email: 'eva@example.com', createdAt: '2023-03-10', phone: 515489615 },
     ]);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState<SortField>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [error, setError] = useState('');
 
     const filteredClients = clients.filter(client =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,20 +47,68 @@ const ExistingClientsPage = () => {
         }
     };
 
-    const handleAddClient = (newClient: NewClient) => {
-        setClients([...clients, { ...newClient, id: clients.length + 1 }]);
-        setIsAddModalOpen(false);
-    };
-
-    const handleShiftToPrevious = (id: number) => {
-        const clientToShift = clients.find(client => client.id === id);
-        if (clientToShift) {
-            // In a real application, you would make an API call here
-            console.log(`Shifting client ${clientToShift.name} to previous clients`);
-            setClients(clients.filter(client => client.id !== id));
-            // You would then update the previous clients list, possibly through a global state management solution or an API call
+    const handleAddClient = async (newClient: NewClient) => {
+        try {
+          // Update frontend state
+          setClients([...clients, { ...newClient, _id: clients.length + 1 }]);
+      
+          // Send a POST request to the backend API to save the client
+          const response = await axios.post('http://localhost:5000/api/clients/existing', {
+            email: newClient.email,
+            name: newClient.name,
+            phone: newClient.phone,
+          });
+      
+          console.log(response.data.message);  // Log success message
+          setIsAddModalOpen(false);  // Close the modal after adding
+        } catch (error) {
+          console.error('Error adding client:', error);
         }
-    };
+      };
+    
+      const fetchExistingClients = async () => {
+        try {
+          // Make the GET request to fetch existing clients
+          const response = await axios.get('http://localhost:5000/api/clients/existing');
+      
+          // Update the clients state with the response data
+          setClients(response.data);  // Assuming `setClients` updates your state with the client list
+      
+          console.log('Existing clients fetched:', response.data);
+        } catch (error) {
+          console.error('Error fetching existing clients:', error);
+        }
+      };
+
+      useEffect(() => {
+        fetchExistingClients();  // Fetch the existing clients when the component mounts
+      }, []);
+
+      const handleShiftToPrevious = async (id: number) => {
+        const clientToShift = clients.find(client => client._id === id);
+        console.log(clientToShift?._id);
+      
+        if (clientToShift) {
+          // In a real application, you would make an API call here to update the client type
+          try {
+            // Make a PUT request to update the client type to 'previous'
+            await axios.put(`http://localhost:5000/api/clients/shift/${id}`, {
+              type: 'previous',  // Changing the type to 'previous'
+            });
+      
+            // If successful, update the client list locally
+            console.log(`Shifting client ${clientToShift.name} to previous clients`);
+            
+            // Update clients by setting the type to 'previous' for the client
+            setClients(clients.map(client => 
+              client._id === id ? { ...client, type: 'previous' } : client
+            ));
+          } catch (error) {
+            console.error('Error shifting client:', error);
+          }
+        }
+      };
+      
 
     return (
         <div className="min-h-screen font-sans bg-gray-100">
@@ -103,37 +153,37 @@ const ExistingClientsPage = () => {
                             Add Client
                         </button>
                     </div>
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="bg-white rounded-lg shadow-lg overflow-h_idden">
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-w_ider cursor-pointer" onClick={() => handleSort('name')}>
                                         Name <FaSort className="inline ml-1" />
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('email')}>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-w_ider cursor-pointer" onClick={() => handleSort('email')}>
                                         Email <FaSort className="inline ml-1" />
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('joinDate')}>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-w_ider cursor-pointer" onClick={() => handleSort('createdAt')}>
                                         Join Date <FaSort className="inline ml-1" />
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('lastInvoice')}>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-w_ider cursor-pointer" onClick={() => handleSort('phone')}>
                                         Last Invoice <FaSort className="inline ml-1" />
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-w_ider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white div_ide-y div_ide-gray-200">
                                 {filteredClients.map((client) => (
-                                    <tr key={client.id}>
+                                    <tr key={client._id}>
                                         <td className="px-6 py-4 whitespace-nowrap">{client.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{client.email}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{client.joinDate}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{client.lastInvoice}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{client.createdAt}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{client.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <button
-                                                onClick={() => handleShiftToPrevious(client.id)}
+                                                onClick={() => handleShiftToPrevious(client._id)}
                                                 className="text-red-600 hover:text-red-900 flex items-center"
                                             >
                                                 <FaUserMinus className="mr-2" />

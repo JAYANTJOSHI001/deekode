@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch, FaSort, FaUndo } from 'react-icons/fa';
+import axios from 'axios';
 
 type Client = {
     id: number;
@@ -20,10 +21,42 @@ const PreviousClientsPage = () => {
         { id: 2, name: 'Emma Taylor', email: 'emma@example.com', lastActive: '2023-01-15', totalRevenue: 3500 },
         { id: 3, name: 'Frank Miller', email: 'frank@example.com', lastActive: '2023-02-28', totalRevenue: 4200 },
     ]);
-
+    const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState<SortField>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+    const getExistingClients = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/clients/subscribe`);
+          console.log(response.data);
+          return response.data;
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            throw new Error(error.response.data?.error || 'Failed to fetch subscribers');
+          } else {
+            throw new Error('Failed to fetch subscribers');
+          }
+        }
+      };
+
+    useEffect(() => {
+        const fetchSubscribers = async () => {
+          try {
+            const result = await getExistingClients();  // Call the function to fetch subscribers
+            setClients(result);  // Set the fetched subscribers to the state
+          } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);  // Set error message if there's an issue
+            } else {
+                setError('An unknown error occurred');
+            }
+          }
+        };
+    
+        fetchSubscribers();  // Fetch the subscribers when the component mounts
+      }, []);
+    
 
     useEffect(() => {
         // In a real application, you would fetch the updated list of previous clients here
@@ -44,8 +77,8 @@ const PreviousClientsPage = () => {
       }, []);
 
     const filteredClients = clients.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase())
+        client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client?.email?.toLowerCase().includes(searchTerm.toLowerCase())
     ).sort((a, b) => {
         if (a[sortField] < b[sortField]) return sortDirection === 'asc' ? -1 : 1;
         if (a[sortField] > b[sortField]) return sortDirection === 'asc' ? 1 : -1;
@@ -133,7 +166,7 @@ const PreviousClientsPage = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">{client.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{client.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{client.lastActive}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">${client.totalRevenue.toLocaleString()}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">${client.totalRevenue?.toLocaleString()}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <button
                                                 onClick={() => handleReactivate(client.id)}

@@ -4,15 +4,41 @@ import Link from 'next/link'
 import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa'
 import { useState } from 'react'
 import Image from 'next/image'
+import axios from 'axios'
 
 const Footer = () => {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const subscribeNewsletter = async (email: string) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/clients/subscribe`, { 
+        email,
+        type: 'newsletter',        
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data?.error || 'Subscription failed');
+      } else {
+        throw new Error('Subscription failed');
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Handle newsletter subscription logic here
-    console.log('Subscribed with email:', email)
-    setEmail('')
+    try {
+      const result = await subscribeNewsletter(email);
+      setMessage(result.message);  // Set success message
+    } catch (error) {
+      if (error instanceof Error) {
+        setMessage(error.message);  // Set error message
+      } else {
+        setMessage('An unknown error occurred');  // Handle unknown error type
+      }
+    }
   }
 
   return (
@@ -20,7 +46,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className='space-y-4'>
-            <Image src={`http://res.cloudinary.com/du7a1obsy/image/upload/v1736923974/fe7g5ghjoktqoln2rp9r.svg`} alt="Logo" width={40} height={40} />
+            <Image src={`https://res.cloudinary.com/du7a1obsy/image/upload/v1737108396/s8ahvrknsjlc3qmlwbq8.png`} alt="Logo" width={250} height={50}/>
             <p className="text-sm">Expert accounting services for your financial success.</p>
           </div>
           <div>

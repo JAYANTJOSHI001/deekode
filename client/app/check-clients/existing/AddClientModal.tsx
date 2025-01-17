@@ -3,27 +3,60 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
+import { Phone } from 'lucide-react';
+import axios from 'axios';
 
 interface AddClientModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (client: { name: string; email: string; joinDate: string; lastInvoice: string }) => void;
+    onAdd: (client: { name: string; email: string; createdAt: string; phone: number }) => void;
+}
+
+interface NewClient {
+    name: string;
+    email: string;
+    createdAt: string;
+    phone: number;
 }
 
 const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose, onAdd }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [joinDate, setJoinDate] = useState('');
-    const [lastInvoice, setLastInvoice] = useState('');
+    const [phone, setPhone] = useState('');
+    const [createdAt, setcreatedAt] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onAdd({ name, email, joinDate, lastInvoice });
-        setName('');
-        setEmail('');
-        setJoinDate('');
-        setLastInvoice('');
-    };
+    // Form submit handler
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Prepare new client object
+    const newClient: NewClient = { name, email, createdAt, phone: Number(phone) };
+
+    // Call the handleAddClient function to send data to the backend
+    handleAddClient(newClient);
+
+    // Reset form fields
+    setName('');
+    setEmail('');
+    setcreatedAt('');
+    setPhone('');
+  };
+
+  // Add client to the backend
+  const handleAddClient = async (newClient: NewClient) => {
+    try {
+      // Send a POST request to the backend API to save the client
+      const response = await axios.post('http://localhost:5000/api/clients/existing', {
+        email: newClient.email,
+        name: newClient.name,
+        phone: newClient.phone,
+      });
+
+      console.log(response.data.message);  // Log success message
+    } catch (error) {
+      console.error('Error adding client:', error);
+    }
+  };
 
     return (
         <AnimatePresence>
@@ -70,23 +103,23 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose, onAdd 
                                 />
                             </div>
                             <div>
-                                <label htmlFor="joinDate" className="block text-sm font-medium text-gray-700">Join Date</label>
+                                <label htmlFor="createdAt" className="block text-sm font-medium text-gray-700">Join Date</label>
                                 <input
                                     type="date"
-                                    id="joinDate"
-                                    value={joinDate}
-                                    onChange={(e) => setJoinDate(e.target.value)}
+                                    id="createdAt"
+                                    value={createdAt}
+                                    onChange={(e) => setcreatedAt(e.target.value)}
                                     required
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
                                 />
                             </div>
                             <div>
-                                <label htmlFor="lastInvoice" className="block text-sm font-medium text-gray-700">Last Invoice Date</label>
+                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
                                 <input
-                                    type="date"
-                                    id="lastInvoice"
-                                    value={lastInvoice}
-                                    onChange={(e) => setLastInvoice(e.target.value)}
+                                    type="phone"
+                                    id="phone"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
                                     required
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
                                 />

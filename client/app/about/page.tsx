@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 const AboutPage = () => {
   const teamMembers = [
-    { name: 'Deepak Joshi', role: 'CEO & Founder', image: '/placeholder.svg?height=300&width=300' },
+    { name: 'Deepak Joshi', role: 'CEO & Founder', image: 'https://res.cloudinary.com/du7a1obsy/image/upload/v1737109707/imxvnfzz03ukqyiyxw5l.jpg?height=300&width=300' },
   ]
 
   const certifications = [

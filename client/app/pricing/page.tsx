@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion'
 import { FaCheck, FaArrowRight } from 'react-icons/fa'
 import Link from 'next/link'
+import axios from 'axios'
+import { useState } from 'react'
 
 const PricingPage = () => {
   const pricingPlans = [
@@ -129,30 +131,77 @@ const PricingCard = ({ name, price, features, highlighted = false }: PricingCard
 }
 
 const NewsletterSignup = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Handle newsletter signup logic here
-  }
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const subscribeNewsletter = async (email: string) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/clients/subscribe', { 
+        email,
+        type: 'newsletter',
+      });
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data?.error || 'Subscription failed');
+      } else {
+        throw new Error('Subscription failed');
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+    setIsSubmitting(true);
+
+    try {
+      const result = await subscribeNewsletter(email);
+      setMessage(result.message || 'Subscribed successfully!');
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto">
       <div className="flex">
         <input
           type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setMessage('');
+            setError('');
+          }}
           placeholder="Enter your email"
           className="flex-grow px-4 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-r-full font-bold hover:bg-blue-700 transition-colors duration-300"
+          className={`bg-blue-600 text-white px-6 py-2 rounded-r-full font-bold hover:bg-blue-700 transition-colors duration-300 ${
+            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={isSubmitting}
         >
-          Subscribe
+          {isSubmitting ? 'Submitting...' : 'Subscribe'}
         </button>
       </div>
+      {message && <p className="text-green-600 mt-2">{message}</p>}
+      {error && <p className="text-red-600 mt-2">{error}</p>}
     </form>
-  )
-}
+  );
+};
 
 export default PricingPage
 

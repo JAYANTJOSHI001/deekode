@@ -1,15 +1,50 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch } from 'react-icons/fa';
+import axios from 'axios';
+import { format } from 'date-fns'; 
 
 const NewsletterClientsPage = () => {
     const [clients, setClients] = useState([
-        { id: 1, email: 'john@example.com', signupDate: '2023-05-01' },
-        { id: 2, email: 'jane@example.com', signupDate: '2023-05-15' },
-        { id: 3, email: 'bob@example.com', signupDate: '2023-06-01' },
+        { id: 1, email: 'john@example.com', createdAt: '2023-05-01' },
+        { id: 2, email: 'jane@example.com', createdAt: '2023-05-15' },
+        { id: 3, email: 'bob@example.com', createdAt: '2023-06-01' },
     ]);
+
+    const [error, setError] = useState('');
+
+    const getNewsletterSubscribers = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/clients/subscribe`);
+          console.log(response.data);
+          return response.data;
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            throw new Error(error.response.data?.error || 'Failed to fetch subscribers');
+          } else {
+            throw new Error('Failed to fetch subscribers');
+          }
+        }
+      };
+
+    useEffect(() => {
+        const fetchSubscribers = async () => {
+        try {
+            const result = await getNewsletterSubscribers();
+            setClients(result);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        }
+        };
+
+        fetchSubscribers();
+    }, []);
 
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -61,11 +96,11 @@ const NewsletterClientsPage = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {filteredClients.map((client) => (
-                                    <tr key={client.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">{client.id}</td>
+                                {filteredClients.map((client, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4 whitespace-nowrap">{index+1}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{client.email}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{client.signupDate}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{format(new Date(client.createdAt), 'MM/dd/yyyy')}</td>
                                     </tr>
                                 ))}
                             </tbody>

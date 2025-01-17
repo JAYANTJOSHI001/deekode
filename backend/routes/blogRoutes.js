@@ -3,8 +3,8 @@ import { getBlogs, addBlog, deleteBlog } from '../controllers/blogController.js'
 
 const router = express.Router();
 
-router.get('/blogs', getBlogs);
-router.post('/blogs', addBlog);
-router.delete('/blogs/:id', deleteBlog);
+router.get('/', getBlogs);
+router.post('/', addBlog);
+router.delete('/:id', deleteBlog);
 
 export default router;

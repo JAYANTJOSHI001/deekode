@@ -10,15 +10,23 @@ const getBlogs = async (req, res) => {
 };
 
 const addBlog = async (req, res) => {
+    console.log('Request Body:', req.body); // Log incoming data for debugging
     try {
         const { title, content, categories, links } = req.body;
+
+        if (!title || !content) {
+            return res.status(400).json({ error: 'Title and content are required' });
+        }
+
         const blog = new Blog({ title, content, categories, links });
         await blog.save();
-        res.status(201).json({ blog });
+        res.status(201).json({ message: 'Blog added successfully', blog });
     } catch (err) {
-        res.status(400).json({ error: 'Failed to add blog' });
+        console.error('Error saving blog:', err);
+        res.status(500).json({ error: 'Failed to add blog due to server error' });
     }
 };
+
 
 const deleteBlog = async (req, res) => {
     try {

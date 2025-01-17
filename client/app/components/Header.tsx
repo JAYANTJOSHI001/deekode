@@ -33,7 +33,7 @@ const Header = () => {
     <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className={`text-2xl font-bold hover:text-blue-700 ${isScrolled ? 'text-blue-600' : 'text-white'} transition-colors duration-300`}>
-           <Image src={isScrolled ? `http://res.cloudinary.com/du7a1obsy/image/upload/v1736924373/prwzumzwo3mcr3t3qgkh.svg` : `http://res.cloudinary.com/du7a1obsy/image/upload/v1736923974/fe7g5ghjoktqoln2rp9r.svg`} alt="Logo" width={40} height={40} />
+           <Image src={isScrolled ? `https://res.cloudinary.com/du7a1obsy/image/upload/v1737108503/rcgwgq4stfaiqttmkw4f.png` : `http://res.cloudinary.com/du7a1obsy/image/upload/v1737108093/hj3eshf1vxnwuffbm8d1.png`} alt="Logo" width={40} height={40} />
         </Link>
         <nav className="hidden md:flex space-x-6">
           {navItems.map((item) => (

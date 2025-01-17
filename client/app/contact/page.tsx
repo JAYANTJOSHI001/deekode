@@ -17,13 +17,27 @@ const ContactPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Handle form submission here (e.g., send data to server)
-    console.log('Form submitted:', formData)
-    // Reset form after submission
-    setFormData({ name: '', email: '', phone: '', message: '' })
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/clients/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        console.log('Form submitted successfully!');
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      } else {
+        console.error('Failed to submit the form.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
 
   return (
     <div className="min-h-screen">
@@ -51,7 +65,7 @@ const ContactPage = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
+            <div className="md:col-span-2">
               <h2 className="text-3xl font-bold mb-8">Send Us a Message</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -110,10 +124,6 @@ const ContactPage = () => {
                 </motion.button>
               </form>
             </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-8">Schedule a Consultation</h2>
-              <CalendlyWidget url="https://calendly.com/jayantjoshi0001/30min" />
-            </div>
           </div>
         </div>
       </section>
@@ -133,7 +143,12 @@ const ContactPage = () => {
               <FaEnvelope className="text-blue-600 text-2xl mr-4" />
               <div>
                 <h3 className="font-bold">Email</h3>
-                <p>info@Deekode.com</p>
+                <p 
+                onClick={() => window.location.href = 'mailto:deekodeconsultancy@gmail.com'} 
+                className="cursor-pointer text-blue-600 hover:underline"
+              >
+                deekodeconsultancy@gmail.com
+              </p>
               </div>
             </div>
             <div className="flex items-center">

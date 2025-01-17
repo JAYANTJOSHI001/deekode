@@ -5,6 +5,7 @@ const blogSchema = new mongoose.Schema({
     content: { type: String, required: true },
     categories: [String],
     links: [String],
+    createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 const Blog = mongoose.model('Blog', blogSchema);
