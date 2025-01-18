@@ -21,7 +21,7 @@ const ContactPage = () => {
     e.preventDefault();
   
     try {
-      const response = await fetch('http://localhost:5000/api/clients/message', {
+      const response = await fetch('https://deekode-1.onrender.com/api/clients/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

@@ -138,7 +138,7 @@ const NewsletterSignup = () => {
 
   const subscribeNewsletter = async (email: string) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/clients/subscribe', { 
+      const response = await axios.post('https://deekode-1.onrender.com/api/clients/subscribe', { 
         email,
         type: 'newsletter',
       });

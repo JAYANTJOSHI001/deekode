@@ -46,7 +46,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose, onAdd 
   const handleAddClient = async (newClient: NewClient) => {
     try {
       // Send a POST request to the backend API to save the client
-      const response = await axios.post('http://localhost:5000/api/clients/existing', {
+      const response = await axios.post('https://deekode-1.onrender.com/api/clients/existing', {
         email: newClient.email,
         name: newClient.name,
         phone: newClient.phone,

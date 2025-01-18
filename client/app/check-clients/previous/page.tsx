@@ -28,7 +28,7 @@ const PreviousClientsPage = () => {
 
     const getExistingClients = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/clients/subscribe`);
+          const response = await axios.get(`https://deekode-1.onrender.com/api/clients/subscribe`);
           console.log(response.data);
           return response.data;
         } catch (error) {

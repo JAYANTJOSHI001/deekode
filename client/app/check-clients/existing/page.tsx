@@ -53,7 +53,7 @@ const ExistingClientsPage = () => {
           setClients([...clients, { ...newClient, _id: clients.length + 1 }]);
       
           // Send a POST request to the backend API to save the client
-          const response = await axios.post('http://localhost:5000/api/clients/existing', {
+          const response = await axios.post('https://deekode-1.onrender.com/api/clients/existing', {
             email: newClient.email,
             name: newClient.name,
             phone: newClient.phone,
@@ -69,7 +69,7 @@ const ExistingClientsPage = () => {
       const fetchExistingClients = async () => {
         try {
           // Make the GET request to fetch existing clients
-          const response = await axios.get('http://localhost:5000/api/clients/existing');
+          const response = await axios.get('https://deekode-1.onrender.com/api/clients/existing');
       
           // Update the clients state with the response data
           setClients(response.data);  // Assuming `setClients` updates your state with the client list
@@ -92,7 +92,7 @@ const ExistingClientsPage = () => {
           // In a real application, you would make an API call here to update the client type
           try {
             // Make a PUT request to update the client type to 'previous'
-            await axios.put(`http://localhost:5000/api/clients/shift/${id}`, {
+            await axios.put(`https://deekode-1.onrender.com/api/clients/shift/${id}`, {
               type: 'previous',  // Changing the type to 'previous'
             });
       

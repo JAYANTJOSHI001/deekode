@@ -50,7 +50,7 @@ const AddBlogPage = () => {
 
     const fetchBlogs = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/blogs/');
+            const response = await fetch('https://deekode-1.onrender.com/api/blogs/');
             if (!response.ok) {
                 throw new Error('Failed to fetch blogs');
             }
@@ -115,7 +115,7 @@ const AddBlogPage = () => {
     // Function to submit the blog (assuming this exists and performs the actual API call)
     const submitBlog = async (blogData: BlogData): Promise<void> => {
         try {
-        const response = await fetch('http://localhost:5000/api/blogs/', {
+        const response = await fetch('https://deekode-1.onrender.com/api/blogs/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
