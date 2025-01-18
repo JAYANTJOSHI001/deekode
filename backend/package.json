@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
   "start": "nodemon app.js",
-  "build": "npx babel src -d dist",
   "dev": "nodemon app.js"
 },
   "dependencies": {
